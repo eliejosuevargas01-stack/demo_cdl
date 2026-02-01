@@ -1,0 +1,8 @@
+{
+  "name": "Agente CDL - Demo Inteligente",
+  "description": "Uma demonstração avançada do Agente CDL, focado em inteligência artificial para o varejo e gestão de lojistas.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
