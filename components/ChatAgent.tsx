@@ -1,77 +1,175 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Smartphone, Loader2, ShieldCheck } from 'lucide-react';
+import { Send, ShieldCheck, Play } from 'lucide-react';
 import { Message, NegotiationRules } from '../types';
-import { getAgentResponseStream } from '../services/geminiService';
+
+const WEBHOOK_URL = 'https://myn8n.seommerce.shop/webhook/agente-cld-demo';
 
 const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Início automático do agente
-  useEffect(() => {
-    const startAgent = async () => {
-      if (messages.length > 0) return;
-      handleSend("Olá, inicie a conversa de cobrança comigo.");
-    };
-    startAgent();
-  }, []);
+  const requestIdRef = useRef(0);
+  const sessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
-  const handleSend = async (customInput?: string) => {
-    const text = customInput || input;
-    if (!text.trim() || isLoading) return;
+  const parseWebhookResponse = (data: any): { text: string; sessionId?: string } => {
+    if (!data) return { text: 'Sem resposta do servidor.' };
+    if (typeof data === 'string') return { text: data };
 
-    // Se for o comando inicial interno, não mostramos a mensagem do usuário
-    const isInternalInit = text === "Olá, inicie a conversa de cobrança comigo.";
-    
-    if (!isInternalInit) {
-      const userMsg: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: text,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, userMsg]);
+    let payload = data;
+    if (Array.isArray(payload)) payload = payload[0];
+
+    const output = payload?.output ?? payload;
+    const response = output?.response ?? payload?.response ?? output?.data?.response;
+
+    const sessionId =
+      output?.session_id ??
+      response?.session_id ??
+      output?.data?.session_id ??
+      payload?.session_id;
+
+    const content =
+      response?.content ??
+      output?.message ??
+      output?.text ??
+      payload?.message ??
+      payload?.text;
+
+    let text = typeof content === 'string' ? content : 'Resposta recebida, mas sem conteúdo.';
+
+    const options = response?.options;
+    if (Array.isArray(options) && options.length > 0) {
+      const formatted = options
+        .map((option: any, index: number) => {
+          const id = option?.id ?? String(index + 1);
+          const description =
+            typeof option?.description === 'string'
+              ? option.description
+              : typeof option === 'string'
+                ? option
+                : '';
+          return description ? `${id}. ${description}` : `${id}.`;
+        })
+        .join('\n');
+      text = `${text}\n\nOpções:\n${formatted}`;
     }
 
+    const quickReplies = response?.quick_replies ?? response?.quickReplies;
+    if (Array.isArray(quickReplies) && quickReplies.length > 0) {
+      const buttons = quickReplies.map((reply: any) => `[BOTÃO: ${reply}]`).join(' ');
+      text = `${text}\n\n${buttons}`;
+    }
+
+    return { text, sessionId };
+  };
+
+  const callWebhook = async (payload: Record<string, unknown>): Promise<{ text: string; sessionId?: string }> => {
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const contentType = response.headers.get('content-type') || '';
+    const data = contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
+    return parseWebhookResponse(data);
+  };
+
+  const startSimulation = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setMessages([]);
+    sessionIdRef.current = null;
+    const currentRequest = ++requestIdRef.current;
+    try {
+      const reply = await callWebhook({
+        action: 'start',
+        message: 'Iniciar simulação',
+        history: [],
+        rules,
+      });
+      if (currentRequest !== requestIdRef.current) return;
+      if (reply.sessionId) sessionIdRef.current = reply.sessionId;
+      setHasStarted(true);
+      setMessages([{
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: reply.text,
+        timestamp: new Date(),
+      }]);
+    } catch (error) {
+      console.error(error);
+      setMessages([{
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'Não foi possível iniciar a simulação. Verifique o webhook.',
+        timestamp: new Date(),
+      }]);
+    } finally {
+      if (currentRequest === requestIdRef.current) setIsLoading(false);
+    }
+  };
+
+  const handleSend = async (customInput?: string) => {
+    const text = customInput || input;
+    if (!text.trim() || isLoading || !hasStarted) return;
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date(),
+    };
+    const nextMessages = [...messages, userMsg];
+    setMessages(nextMessages);
     setInput('');
     setIsLoading(true);
 
-    const history = messages.map(m => ({
-      role: m.role === 'assistant' ? 'model' as const : 'user' as const,
-      parts: [{ text: m.content }]
+    const history = nextMessages.map((m) => ({
+      role: m.role,
+      content: m.content,
     }));
 
+    const currentRequest = ++requestIdRef.current;
     try {
-      const stream = await getAgentResponseStream(text, history, rules);
-      
-      // Cria uma mensagem vazia para o assistente que será preenchida pelo stream
-      const assistantMsgId = (Date.now() + 1).toString();
-      setMessages(prev => [...prev, {
-        id: assistantMsgId,
-        role: 'assistant',
-        content: '',
-        timestamp: new Date()
-      }]);
-
-      let fullContent = '';
-      for await (const chunk of stream) {
-        const chunkText = chunk.text;
-        fullContent += chunkText;
-        setMessages(prev => prev.map(m => 
-          m.id === assistantMsgId ? { ...m, content: fullContent } : m
-        ));
-      }
+      const reply = await callWebhook({
+        action: 'message',
+        message: text,
+        session_id: sessionIdRef.current,
+        history,
+        rules,
+      });
+      if (currentRequest !== requestIdRef.current) return;
+      if (reply.sessionId) sessionIdRef.current = reply.sessionId;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: reply.text,
+          timestamp: new Date(),
+        },
+      ]);
     } catch (error) {
       console.error(error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Erro ao falar com o webhook. Tente novamente.',
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
-      setIsLoading(false);
+      if (currentRequest === requestIdRef.current) setIsLoading(false);
     }
   };
 
@@ -131,6 +229,21 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
           <span className="bg-white/60 text-[10px] px-3 py-1 rounded-lg text-slate-500 font-bold uppercase tracking-widest">Criptografia CDL Ativa</span>
         </div>
 
+        {!hasStarted && (
+          <div className="bg-white/90 border border-slate-200 rounded-2xl p-4 text-center shadow-sm">
+            <p className="text-sm font-bold text-slate-800">Inicie a simulação para receber a primeira mensagem.</p>
+            <p className="text-xs text-slate-500 mt-1">O webhook vai gerar a abertura da cobrança.</p>
+            <button
+              onClick={startSimulation}
+              disabled={isLoading}
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest shadow-lg disabled:bg-slate-300"
+            >
+              <Play size={14} />
+              Iniciar simulação
+            </button>
+          </div>
+        )}
+
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
             <div className={`max-w-[88%] p-3 rounded-2xl shadow-sm relative ${
@@ -148,7 +261,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
             </div>
           </div>
         ))}
-        {isLoading && messages[messages.length-1]?.content === '' && (
+        {isLoading && (
           <div className="flex justify-start">
             <div className="bg-white px-4 py-2 rounded-2xl shadow-sm">
               <div className="flex gap-1">
@@ -170,11 +283,12 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Responda o agente..."
-            className="flex-1 bg-transparent py-1.5 text-[14px] focus:outline-none text-slate-700"
+            disabled={!hasStarted}
+            className="flex-1 bg-transparent py-1.5 text-[14px] focus:outline-none text-slate-700 disabled:text-slate-400"
           />
           <button
             onClick={() => handleSend()}
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !input.trim() || !hasStarted}
             className="p-2 bg-[#075E54] text-white rounded-full hover:bg-emerald-800 disabled:bg-slate-300 transition-all shadow active:scale-90"
           >
             <Send size={16} fill="currentColor" />

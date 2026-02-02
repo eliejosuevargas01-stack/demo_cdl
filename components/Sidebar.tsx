@@ -1,15 +1,16 @@
 
 import React from 'react';
-import { LayoutDashboard, Users, MessageSquare, Calculator, ShieldCheck, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, Calculator, Building2, LogOut } from 'lucide-react';
 
 interface SidebarProps {
-  activeView: 'dashboard' | 'collections' | 'simulator';
-  onViewChange: (view: 'dashboard' | 'collections' | 'simulator') => void;
+  activeView: 'cdl' | 'merchant' | 'collections' | 'simulator';
+  onViewChange: (view: 'cdl' | 'merchant' | 'collections' | 'simulator') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'Painel de ROI', icon: LayoutDashboard },
+    { id: 'cdl', label: 'Painel CDL', icon: Building2 },
+    { id: 'merchant', label: 'Painel Lojista', icon: LayoutDashboard },
     { id: 'collections', label: 'Lista de Devedores', icon: Users },
     { id: 'simulator', label: 'Simular Cobrança', icon: MessageSquare },
   ];

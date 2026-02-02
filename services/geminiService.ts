@@ -2,13 +2,27 @@
 import { GoogleGenAI } from "@google/genai";
 import { NegotiationRules } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+type StreamChunk = { text: string };
+
+const createMockStream = (text: string) => {
+  async function* generator(): AsyncIterable<StreamChunk> {
+    yield { text };
+  }
+  return generator();
+};
 
 export const getAgentResponseStream = async (
   userPrompt: string, 
   history: any[] = [], 
   rules: NegotiationRules
 ) => {
+  const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    const fallbackText = `✅ Modo demo (sem Gemini). Posso oferecer até ${rules.maxDiscount}% de desconto no PIX ou parcelar em até ${rules.maxInstallments}x. O que prefere? [BOTÃO: Aceitar Desconto] [BOTÃO: Ver Parcelas]`;
+    return createMockStream(fallbackText);
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   const SYSTEM_INSTRUCTION = `
 Você é o "Agente de Recuperação CDL", focado em WhatsApp e ROI. 
 Sua missão é ser rápido, cordial e eficiente na cobrança.

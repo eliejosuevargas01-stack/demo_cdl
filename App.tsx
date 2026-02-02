@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
+import CdlDashboard from './components/Dashboard';
+import MerchantDashboard from './components/MerchantDashboard';
 import ChatAgent from './components/ChatAgent';
 import CollectionsManager from './components/CollectionsManager';
 import { Search, Bell, User } from 'lucide-react';
 import { NegotiationRules } from './types';
 
 const App: React.FC = () => {
-  const [activeView, setActiveView] = useState<'dashboard' | 'collections' | 'simulator'>('dashboard');
+  const [activeView, setActiveView] = useState<'cdl' | 'merchant' | 'collections' | 'simulator'>('cdl');
   
   // Estado global das regras de negociação
   const [rules, setRules] = useState<NegotiationRules>({
@@ -51,7 +52,8 @@ const App: React.FC = () => {
         </header>
 
         <div className="p-8">
-          {activeView === 'dashboard' && <Dashboard />}
+          {activeView === 'cdl' && <CdlDashboard />}
+          {activeView === 'merchant' && <MerchantDashboard />}
           {activeView === 'collections' && (
             <CollectionsManager rules={rules} setRules={setRules} />
           )}
