@@ -32,21 +32,21 @@ const MerchantDashboard: React.FC = () => {
   }), []);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Performance de Recuperação 🚀</h1>
-          <p className="text-slate-500">IA no WhatsApp que cobra inadimplentes e maximiza a recuperação de crédito para CDL e lojistas, 100% automatizada.</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-slate-900">Performance de Recuperação 🚀</h1>
+          <p className="text-sm lg:text-base text-slate-500">IA no WhatsApp que cobra inadimplentes e maximiza a recuperação de crédito para CDL e lojistas, 100% automatizada.</p>
         </div>
-        <div className="bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl flex items-center gap-2">
-          <span className="text-emerald-600 font-bold text-sm">ROI ATUAL: 14.2x</span>
+        <div className="bg-emerald-50 border border-emerald-100 px-3 lg:px-4 py-2 rounded-xl flex items-center gap-2 self-start">
+          <span className="text-emerald-600 font-bold text-xs lg:text-sm">ROI ATUAL: 14.2x</span>
           <InfoTip text="Quanto o valor recuperado representa em relação ao investimento." />
           <ArrowUpRight size={16} className="text-emerald-600" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center">
               <span className="text-slate-500 text-xs font-bold uppercase">Total Recuperado</span>
@@ -54,11 +54,11 @@ const MerchantDashboard: React.FC = () => {
             </div>
             <DollarSign size={18} className="text-emerald-500" />
           </div>
-          <p className="text-3xl font-black text-slate-900">R$ 45.300</p>
+          <p className="text-2xl lg:text-3xl font-black text-slate-900">R$ 45.300</p>
           <p className="text-xs text-emerald-600 font-medium mt-1">+18% este mês</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center">
               <span className="text-slate-500 text-xs font-bold uppercase">Acordos Firmados</span>
@@ -66,11 +66,11 @@ const MerchantDashboard: React.FC = () => {
             </div>
             <CheckCircle2 size={18} className="text-blue-500" />
           </div>
-          <p className="text-3xl font-black text-slate-900">142</p>
+          <p className="text-2xl lg:text-3xl font-black text-slate-900">142</p>
           <p className="text-xs text-blue-600 font-medium mt-1">82% de conversão</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center">
               <span className="text-slate-500 text-xs font-bold uppercase">Em Negociação</span>
@@ -78,25 +78,25 @@ const MerchantDashboard: React.FC = () => {
             </div>
             <TrendingUp size={18} className="text-amber-500" />
           </div>
-          <p className="text-3xl font-black text-slate-900">58</p>
+          <p className="text-2xl lg:text-3xl font-black text-slate-900">58</p>
           <p className="text-xs text-amber-600 font-medium mt-1">Aguardando aceite</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center">
-              <span className="text-slate-500 text-xs font-bold uppercase">Ticket Médio Acordo</span>
+              <span className="text-slate-500 text-xs font-bold uppercase">Ticket Médio</span>
               <InfoTip text="Valor médio recuperado por acordo fechado." />
             </div>
             <AlertCircle size={18} className="text-indigo-500" />
           </div>
-          <p className="text-3xl font-black text-slate-900">R$ 318,00</p>
+          <p className="text-2xl lg:text-3xl font-black text-slate-900">R$ 318</p>
           <p className="text-xs text-indigo-600 font-medium mt-1">Otimizado por IA</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="lg:col-span-2 bg-white p-4 lg:p-6 rounded-3xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <h3 className="font-bold text-slate-800">Fluxo de Caixa Recuperado (Mensal)</h3>
@@ -113,7 +113,7 @@ const MerchantDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="h-[300px]">
+          <div className="h-[280px] lg:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
                 <defs>
@@ -132,7 +132,7 @@ const MerchantDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl text-white">
+        <div className="bg-slate-900 p-4 lg:p-6 rounded-3xl border border-slate-800 shadow-xl text-white">
           <div className="flex items-center mb-4">
             <h3 className="font-bold">Status de Atividade</h3>
             <InfoTip text="Visão rápida do status do agente e da lista atual." />

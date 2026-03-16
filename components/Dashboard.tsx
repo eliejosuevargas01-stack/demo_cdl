@@ -28,20 +28,20 @@ const Dashboard: React.FC = () => {
   }), []);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Painel CDL • Visão Macro</h1>
-          <p className="text-slate-500">Resultados consolidados para presidentes e diretores.</p>
+          <h1 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">Painel CDL • Visão Macro</h1>
+          <p className="text-sm lg:text-base text-slate-500">Resultados consolidados para presidentes e diretores.</p>
         </div>
-        <div className="bg-slate-900 text-white px-4 py-2 rounded-xl flex items-center gap-2">
-          <span className="font-bold text-sm">{reportData.period}</span>
+        <div className="bg-slate-900 text-white px-3 lg:px-4 py-2 rounded-xl flex items-center gap-2 self-start">
+          <span className="font-bold text-xs lg:text-sm">{reportData.period}</span>
           <ArrowUpRight size={16} className="text-emerald-400" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-start mb-3">
             <div className="flex items-center">
               <span className="text-slate-500 text-xs font-bold uppercase">Valor total recuperado</span>
@@ -90,8 +90,8 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
+        <div className="xl:col-span-2 bg-white p-4 lg:p-6 rounded-3xl border border-slate-200 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
             <div>
               <div className="flex items-center">
@@ -125,7 +125,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-4 lg:p-6 rounded-3xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
               <h3 className="font-bold text-slate-800">Indicadores de reputação</h3>
