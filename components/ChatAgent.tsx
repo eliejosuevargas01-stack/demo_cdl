@@ -18,7 +18,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
-  const parseWebhookResponse = (data: any): { text: string; sessionId?: string } => {
+  const parseWebhookResponse = (data: any): { text: string; sessionId?: string; buttons?: Message['buttons'] } => {
     if (!data) return { text: 'Sem resposta do servidor.' };
     if (typeof data === 'string') return { text: data };
 
@@ -41,35 +41,27 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
       payload?.message ??
       payload?.text;
 
-    let text = typeof content === 'string' ? content : 'Resposta recebida, mas sem conteúdo.';
-
-    const options = response?.options;
-    if (Array.isArray(options) && options.length > 0) {
-      const formatted = options
-        .map((option: any, index: number) => {
-          const id = option?.id ?? String(index + 1);
-          const description =
-            typeof option?.description === 'string'
-              ? option.description
-              : typeof option === 'string'
-                ? option
-                : '';
-          return description ? `${id}. ${description}` : `${id}.`;
-        })
-        .join('\n');
-      text = `${text}\n\nOpções:\n${formatted}`;
-    }
+    const text = typeof content === 'string' ? content : 'Resposta recebida, mas sem conteúdo.';
 
     const quickReplies = response?.quick_replies ?? response?.quickReplies;
+    let buttons: Message['buttons'] | undefined;
     if (Array.isArray(quickReplies) && quickReplies.length > 0) {
-      const buttons = quickReplies.map((reply: any) => `[BOTÃO: ${reply}]`).join(' ');
-      text = `${text}\n\n${buttons}`;
+      buttons = quickReplies.map((reply: any, index: number) => {
+        if (typeof reply === 'string') {
+          return { label: reply, action: reply, optionId: String(index + 1) };
+        }
+        return {
+          label: String(reply?.label ?? reply?.text ?? reply?.option_id ?? reply?.action ?? `Opção ${index + 1}`),
+          action: String(reply?.action ?? reply?.value ?? reply?.label ?? reply?.option_id ?? `OPCAO_${index + 1}`),
+          optionId: reply?.option_id ? String(reply.option_id) : undefined,
+        };
+      });
     }
 
-    return { text, sessionId };
+    return { text, sessionId, buttons };
   };
 
-  const callWebhook = async (payload: Record<string, unknown>): Promise<{ text: string; sessionId?: string }> => {
+  const callWebhook = async (payload: Record<string, unknown>): Promise<{ text: string; sessionId?: string; buttons?: Message['buttons'] }> => {
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -102,6 +94,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
         id: Date.now().toString(),
         role: 'assistant',
         content: reply.text,
+        buttons: reply.buttons,
         timestamp: new Date(),
       }]);
     } catch (error) {
@@ -117,7 +110,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
     }
   };
 
-  const handleSend = async (customInput?: string) => {
+  const handleSend = async (customInput?: string, actionOverride?: string, optionId?: string) => {
     const text = customInput || input;
     if (!text.trim() || isLoading || !hasStarted) return;
 
@@ -139,13 +132,18 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
 
     const currentRequest = ++requestIdRef.current;
     try {
-      const reply = await callWebhook({
-        action: 'message',
-        message: text,
+      const payload: Record<string, unknown> = {
+        action: actionOverride ?? 'message',
+        option_id: optionId,
         session_id: sessionIdRef.current,
         history,
         rules,
-      });
+      };
+      if (!actionOverride) {
+        payload.message = text;
+      }
+
+      const reply = await callWebhook(payload);
       if (currentRequest !== requestIdRef.current) return;
       if (reply.sessionId) sessionIdRef.current = reply.sessionId;
       setMessages((prev) => [
@@ -154,6 +152,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: reply.text,
+          buttons: reply.buttons,
           timestamp: new Date(),
         },
       ]);
@@ -173,11 +172,14 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
     }
   };
 
-  const renderContentWithButtons = (content: string) => {
+  const renderContentWithButtons = (content: string, buttons?: Message['buttons']) => {
     // Regex para encontrar botões [BOTÃO: Texto]
     const buttonRegex = /\[BOTÃO: (.*?)\]/g;
     const parts = content.split(buttonRegex);
-    const buttons = [...content.matchAll(buttonRegex)].map(match => match[1]);
+    const fallbackButtons = [...content.matchAll(buttonRegex)].map(match => match[1]);
+    const resolvedButtons = buttons && buttons.length > 0
+      ? buttons
+      : fallbackButtons.map((label) => ({ label, action: label }));
 
     return (
       <div className="space-y-3">
@@ -187,15 +189,15 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
         </p>
         
         {/* Renderiza os botões de forma destacada */}
-        {buttons.length > 0 && !isLoading && (
+        {resolvedButtons.length > 0 && !isLoading && (
           <div className="flex flex-col gap-2 pt-1 border-t border-slate-100 mt-2">
-            {buttons.map((btnText, i) => (
+            {resolvedButtons.map((btn, i) => (
               <button
                 key={i}
-                onClick={() => handleSend(btnText)}
+                onClick={() => handleSend(btn.label, btn.action, btn.optionId)}
                 className="w-full py-2.5 px-4 bg-white border border-blue-100 text-blue-600 rounded-xl text-[12px] font-black uppercase tracking-tight hover:bg-blue-50 transition-all text-center shadow-sm active:scale-95"
               >
-                {btnText}
+                {btn.label}
               </button>
             ))}
           </div>
@@ -221,6 +223,13 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
           </p>
           <p className="text-[10px] text-emerald-300 font-bold uppercase">Online</p>
         </div>
+        <button
+          onClick={startSimulation}
+          disabled={isLoading}
+          className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-50"
+        >
+          Reiniciar
+        </button>
       </div>
 
       {/* Área de Mensagens */}
@@ -249,7 +258,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
             <div className={`max-w-[88%] p-3 rounded-2xl shadow-sm relative ${
               msg.role === 'user' ? 'bg-[#dcf8c6] rounded-tr-none' : 'bg-white rounded-tl-none'
             }`}>
-              {msg.role === 'assistant' ? renderContentWithButtons(msg.content) : (
+              {msg.role === 'assistant' ? renderContentWithButtons(msg.content, msg.buttons) : (
                 <p className="text-[14px] text-slate-800 font-medium">{msg.content}</p>
               )}
               <div className="flex items-center justify-end gap-1 mt-1">

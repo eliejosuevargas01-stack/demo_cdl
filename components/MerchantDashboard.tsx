@@ -36,7 +36,7 @@ const MerchantDashboard: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Performance de Recuperação 🚀</h1>
-          <p className="text-slate-500">Transformando dívidas em lucro líquido automaticamente.</p>
+          <p className="text-slate-500">IA no WhatsApp que cobra inadimplentes e maximiza a recuperação de crédito para CDL e lojistas, 100% automatizada.</p>
         </div>
         <div className="bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl flex items-center gap-2">
           <span className="text-emerald-600 font-bold text-sm">ROI ATUAL: 14.2x</span>

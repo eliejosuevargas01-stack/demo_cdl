@@ -78,6 +78,10 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
+
+      <footer className="w-full bg-white/80 border-t border-slate-200 text-center py-3 text-xs text-slate-500">
+        © Dominus Labs – Agente CDL. É proibida a cópia não autorizada deste material
+      </footer>
     </div>
   );
 };

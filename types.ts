@@ -5,6 +5,11 @@ export interface Message {
   content: string;
   timestamp: Date;
   isButton?: boolean;
+  buttons?: Array<{
+    label: string;
+    action: string;
+    optionId?: string;
+  }>;
 }
 
 export interface NegotiationRules {
