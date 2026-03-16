@@ -24,13 +24,13 @@ const App: React.FC = () => {
       {/* Sidebar Mobile Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-40 transition-transform duration-300 lg:translate-x-0 ${
+      <div className={`fixed left-0 top-0 z-40 transition-transform duration-300 md:translate-x-0 ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <Sidebar 
@@ -42,12 +42,12 @@ const App: React.FC = () => {
         />
       </div>
 
-      <main className="flex-1 lg:ml-64 min-h-screen flex flex-col">
+      <main className="flex-1 md:ml-64 min-h-screen flex flex-col">
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-10">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="lg:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
+            className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
           >
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
