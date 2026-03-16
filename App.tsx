@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import CdlDashboard from './components/Dashboard';
 import MerchantDashboard from './components/MerchantDashboard';
@@ -10,7 +10,7 @@ import { NegotiationRules } from './types';
 
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<'cdl' | 'merchant' | 'collections' | 'simulator'>('cdl');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
   
   // Estado global das regras de negociação
   const [rules, setRules] = useState<NegotiationRules>({
@@ -18,6 +18,22 @@ const App: React.FC = () => {
     maxInstallments: 6,
     paymentMethods: ['PIX', 'Cartão', 'Boleto']
   });
+
+  // Manter sidebar aberto em desktop, fechado em mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true); // Forçar aberto em desktop
+      } else {
+        setIsSidebarOpen(false); // Forçar fechado em mobile/tablet
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Executar na montagem do componente
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="min-h-screen flex bg-[#f8fafc]">
