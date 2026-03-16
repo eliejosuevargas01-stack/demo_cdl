@@ -51,7 +51,7 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <div className="p-8">
+        <div className="flex-1 p-8 overflow-y-auto">
           {activeView === 'cdl' && <CdlDashboard />}
           {activeView === 'merchant' && <MerchantDashboard />}
           {activeView === 'collections' && (
@@ -71,6 +71,10 @@ const App: React.FC = () => {
           )}
         </div>
 
+        <footer className="bg-white/80 border-t border-slate-200 text-center py-3 text-xs text-slate-500">
+          © Dominus Labs – Agente CDL. É proibida a cópia não autorizada deste material
+        </footer>
+
         <div className="fixed bottom-6 right-6 z-50">
           <div className="bg-emerald-600 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-2xl flex items-center gap-2 border border-emerald-400">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -78,10 +82,6 @@ const App: React.FC = () => {
           </div>
         </div>
       </main>
-
-      <footer className="w-full bg-white/80 border-t border-slate-200 text-center py-3 text-xs text-slate-500">
-        © Dominus Labs – Agente CDL. É proibida a cópia não autorizada deste material
-      </footer>
     </div>
   );
 };
