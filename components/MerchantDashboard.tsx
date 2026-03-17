@@ -190,59 +190,59 @@ const MerchantDashboard: React.FC = () => {
       </div>
 
       {isReportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center">
           <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setIsReportOpen(false)}
           ></div>
-          <div className="relative bg-white w-[92%] max-w-2xl rounded-3xl shadow-2xl border border-slate-200">
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
-              <div>
+          <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden border border-slate-200 bg-white shadow-2xl sm:h-auto sm:max-h-[90dvh] sm:w-[92%] sm:max-w-2xl sm:rounded-3xl">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-4 sm:p-6">
+              <div className="min-w-0">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Relatório Detalhado</p>
-                <h3 className="text-xl font-black text-slate-900">Desempenho da Loja</h3>
+                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho da Loja</h3>
                 <p className="text-sm text-slate-500">{reportData.period}</p>
               </div>
               <button
                 onClick={() => setIsReportOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-sm font-bold"
+                className="shrink-0 rounded-xl px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
               >
                 Fechar
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:space-y-6 sm:p-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Total Recuperado</p>
                     <InfoTip text="Soma de tudo que foi pago pelos clientes no período." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.totalRecovered}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.totalRecovered}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Acordos</p>
                     <InfoTip text="Quantidade de acordos concluídos com sucesso." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.totalAgreements}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.totalAgreements}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Conversão</p>
                     <InfoTip text="Percentual de negociações que viraram acordo." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.conversionRate}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.conversionRate}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Ticket Médio</p>
                     <InfoTip text="Valor médio recuperado por acordo fechado." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.avgTicket}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.avgTicket}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                 <div className="bg-white border border-slate-200 rounded-2xl p-4">
                   <div className="flex items-center mb-3">
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Canais com Melhor Conversão</p>
@@ -250,7 +250,7 @@ const MerchantDashboard: React.FC = () => {
                   </div>
                   <div className="space-y-3">
                     {reportData.topChannels.map((channel) => (
-                      <div key={channel.label} className="flex items-center justify-between">
+                      <div key={channel.label} className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                         <span className="text-sm text-slate-700 font-medium">{channel.label}</span>
                         <span className="text-sm font-black text-emerald-600">{channel.value}</span>
                       </div>
@@ -272,16 +272,18 @@ const MerchantDashboard: React.FC = () => {
                   </ul>
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-end gap-3">
+            <div className="border-t border-slate-100 bg-white/95 p-4 backdrop-blur sm:p-6">
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   onClick={() => setIsReportOpen(false)}
-                  className="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-900"
+                  className="w-full rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 sm:w-auto"
                 >
                   Fechar
                 </button>
-                <button className="px-4 py-2 text-sm font-bold bg-emerald-500 text-slate-950 rounded-xl hover:bg-emerald-400">
-                  Baixar PDF (fake)
+                <button className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-400 sm:w-auto">
+                  Baixar PDF (DEMO)
                 </button>
               </div>
             </div>

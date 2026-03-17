@@ -8,9 +8,14 @@ import CollectionsManager from './components/CollectionsManager';
 import { Search, Bell, User, Menu, X } from 'lucide-react';
 import { NegotiationRules } from './types';
 
+const MOBILE_BREAKPOINT = '(max-width: 767px)';
+
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<'cdl' | 'merchant' | 'collections' | 'simulator'>('cdl');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia(MOBILE_BREAKPOINT).matches : false
+  );
+  const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState(false);
   
   // Estado global das regras de negociação
   const [rules, setRules] = useState<NegotiationRules>({
@@ -19,53 +24,84 @@ const App: React.FC = () => {
     paymentMethods: ['PIX', 'Cartão', 'Boleto']
   });
 
-  // Manter sidebar aberto em desktop, fechado em mobile
+  // Detectar viewport mobile e manter o menu colapsável apenas nesses casos
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsSidebarOpen(true); // Forçar aberto em desktop
-      } else {
-        setIsSidebarOpen(false); // Forçar fechado em mobile/tablet
+    const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT);
+    const handleViewportChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches);
+
+      if (!event.matches) {
+        setIsSidebarOpenMobile(false);
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Executar na montagem do componente
+    handleViewportChange(mediaQuery);
 
-    return () => window.removeEventListener('resize', handleResize);
+    const listener = (event: MediaQueryListEvent) => handleViewportChange(event);
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', listener);
+      return () => mediaQuery.removeEventListener('change', listener);
+    }
+
+    mediaQuery.addListener(listener);
+    return () => mediaQuery.removeListener(listener);
   }, []);
 
-  return (
-    <div className="min-h-screen flex bg-[#f8fafc]">
-      {/* Sidebar Mobile Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+  useEffect(() => {
+    if (!isMobile) {
+      return;
+    }
 
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-40 transition-transform duration-300 md:translate-x-0 ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+    document.body.style.overflow = isSidebarOpenMobile ? 'hidden' : '';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile, isSidebarOpenMobile]);
+
+  return (
+    <div className="min-h-[100dvh] bg-[#f8fafc] md:flex">
+      <div
+        className={`fixed inset-0 z-30 bg-slate-950/55 backdrop-blur-[2px] transition-opacity duration-300 md:hidden ${
+          isSidebarOpenMobile ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        onClick={() => setIsSidebarOpenMobile(false)}
+        aria-hidden={!isSidebarOpenMobile}
+      />
+
+      <aside
+        id="app-sidebar"
+        className={`fixed inset-y-0 left-0 z-40 w-screen max-w-full transform transition-transform duration-300 ease-out md:static md:h-[100dvh] md:w-64 md:max-w-none md:shrink-0 md:translate-x-0 ${
+          isSidebarOpenMobile ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        role={isMobile ? 'dialog' : undefined}
+        aria-modal={isMobile ? true : undefined}
+      >
         <Sidebar 
-          activeView={activeView} 
+          activeView={activeView}
           onViewChange={(view) => {
             setActiveView(view);
-            setIsSidebarOpen(false); // Close sidebar on mobile after selection
-          }} 
+            if (isMobile) {
+              setIsSidebarOpenMobile(false);
+            }
+          }}
+          onClose={() => setIsSidebarOpenMobile(false)}
+          showCloseButton={isMobile}
         />
-      </div>
+      </aside>
 
-      <main className="flex-1 md:ml-64 min-h-screen flex flex-col">
+      <main className="relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-w-0">
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-10">
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Always visible on mobile */}
           <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
+            onClick={() => setIsSidebarOpenMobile(!isSidebarOpenMobile)}
+            className="md:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg z-50 relative"
+            aria-label="Abrir/fechar menu"
+            aria-expanded={isSidebarOpenMobile}
+            aria-controls="app-sidebar"
           >
-            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            {isSidebarOpenMobile ? <X size={20} /> : <Menu size={20} />}
           </button>
 
           {/* Search Bar - Responsive */}

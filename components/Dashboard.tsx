@@ -187,85 +187,85 @@ const Dashboard: React.FC = () => {
       </div>
 
       {isReportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center">
           <div
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setIsReportOpen(false)}
           ></div>
-          <div className="relative bg-white w-[92%] max-w-2xl rounded-3xl shadow-2xl border border-slate-200">
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
-              <div>
+          <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden border border-slate-200 bg-white shadow-2xl sm:h-auto sm:max-h-[90dvh] sm:w-[92%] sm:max-w-2xl sm:rounded-3xl">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-4 sm:p-6">
+              <div className="min-w-0">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Relatório Detalhado</p>
-                <h3 className="text-xl font-black text-slate-900">Desempenho CDL Consolidado</h3>
+                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho CDL Consolidado</h3>
                 <p className="text-sm text-slate-500">{reportData.period}</p>
               </div>
               <button
                 onClick={() => setIsReportOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-sm font-bold"
+                className="shrink-0 rounded-xl px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
               >
                 Fechar
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:space-y-6 sm:p-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Total Recuperado</p>
                     <InfoTip text="Soma de tudo que foi pago pelos clientes no mês." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.totalRecovered}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.totalRecovered}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Lojistas Ativos</p>
                     <InfoTip text="Quantidade de lojas com cobrança ativa no período." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.activeMerchants}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.activeMerchants}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">ROI Médio</p>
                     <InfoTip text="Média de valor recuperado para cada R$ 1 investido." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.avgRoi}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.avgRoi}</p>
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                <div className="min-w-0 border border-slate-100 bg-slate-50 rounded-2xl p-4">
                   <div className="flex items-center">
                     <p className="text-[10px] text-slate-500 font-bold uppercase">Receita CDL (3%)</p>
                     <InfoTip text="Comissão da CDL sobre o total recuperado no mês." />
                   </div>
-                  <p className="text-lg font-black text-slate-900">{reportData.cdlRevenue}</p>
+                  <p className="mt-2 text-lg font-black text-slate-900 break-words">{reportData.cdlRevenue}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                 <div className="bg-white border border-slate-200 rounded-2xl p-4">
                   <div className="flex items-center mb-3">
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Dívidas</p>
                     <InfoTip text="Resumo do total do mês, recuperado e perdido." />
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Total do mês</span>
                         <InfoTip text="Soma de todas as dívidas vencidas no período." />
                       </div>
-                      <span className="text-sm font-black text-slate-900">{reportData.totalDebt}</span>
+                      <span className="text-sm font-black text-slate-900 break-words">{reportData.totalDebt}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Recuperadas</span>
                         <InfoTip text="Valor efetivamente pago pelos clientes." />
                       </div>
-                      <span className="text-sm font-black text-emerald-600">{reportData.totalRecovered}</span>
+                      <span className="text-sm font-black text-emerald-600 break-words">{reportData.totalRecovered}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Perdidas</span>
                         <InfoTip text="Valor que ainda não foi recuperado." />
                       </div>
-                      <span className="text-sm font-black text-rose-500">{reportData.totalLost}</span>
+                      <span className="text-sm font-black text-rose-500 break-words">{reportData.totalLost}</span>
                     </div>
                   </div>
                 </div>
@@ -276,22 +276,22 @@ const Dashboard: React.FC = () => {
                     <InfoTip text="Indicadores de qualidade do atendimento." />
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Interações amigáveis</span>
                         <InfoTip text="Percentual de conversas avaliadas como positivas." />
                       </div>
                       <span className="text-sm font-black text-emerald-600">{reportData.friendlyRate}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Reclamações</span>
                         <InfoTip text="Percentual de conversas que geraram reclamação." />
                       </div>
                       <span className="text-sm font-black text-emerald-600">{reportData.complaintRate}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center">
                         <span className="text-sm text-slate-700 font-medium">Satisfação</span>
                         <InfoTip text="Nota média dada pelos clientes após o acordo." />
                       </div>
@@ -300,16 +300,18 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-end gap-3">
+            <div className="border-t border-slate-100 bg-white/95 p-4 backdrop-blur sm:p-6">
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   onClick={() => setIsReportOpen(false)}
-                  className="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-900"
+                  className="w-full rounded-xl px-4 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 sm:w-auto"
                 >
                   Fechar
                 </button>
-                <button className="px-4 py-2 text-sm font-bold bg-emerald-500 text-slate-950 rounded-xl hover:bg-emerald-400">
-                  Baixar PDF (fake)
+                <button className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-400 sm:w-auto">
+                  Baixar PDF (DEMO)
                 </button>
               </div>
             </div>

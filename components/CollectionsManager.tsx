@@ -59,12 +59,42 @@ const CollectionsManager: React.FC<{ rules: NegotiationRules, setRules: (r: Nego
     const buttonRegex = /\[BOTÃO: (.*?)\]/g;
     const parts = content.split(buttonRegex);
     const buttons = [...content.matchAll(buttonRegex)].map(match => match[1]);
+    const textBlocks = parts[0]
+      .trim()
+      .split('\n\n')
+      .map((block) => block.trim())
+      .filter(Boolean);
 
     return (
       <div className="space-y-2">
-        <p className="text-[13px] leading-tight text-slate-800 font-medium whitespace-pre-wrap">
-          {parts[0].trim()}
-        </p>
+        <div className="space-y-2">
+          {textBlocks.map((block, index) => {
+            const isPixCode = block.includes('br.gov.bcb.pix') || block.startsWith('000201');
+
+            if (isPixCode) {
+              return (
+                <div
+                  key={`${block}-${index}`}
+                  className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-3 py-2.5"
+                >
+                  <p className="font-mono text-[11px] leading-relaxed text-slate-700 break-all">
+                    {block}
+                  </p>
+                </div>
+              );
+            }
+
+            return (
+              <p
+                key={`${block}-${index}`}
+                className="text-[13px] font-medium leading-tight text-slate-800 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
+              >
+                {block}
+              </p>
+            );
+          })}
+        </div>
+
         {buttons.length > 0 && (
           <div className="flex flex-col gap-1.5 pt-1">
             {buttons.map((btnText, i) => (
@@ -211,9 +241,9 @@ const CollectionsManager: React.FC<{ rules: NegotiationRules, setRules: (r: Nego
               
               {getMockHistory(selectedDebtor, rules).map((m, i) => (
                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                  <div className={`max-w-[88%] p-3 rounded-2xl shadow-sm relative ${m.role === 'user' ? 'bg-[#dcf8c6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
+                  <div className={`relative max-w-[88%] min-w-0 overflow-hidden p-3 rounded-2xl shadow-sm ${m.role === 'user' ? 'bg-[#dcf8c6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
                     {m.role === 'assistant' ? renderHistoryMessage(m.content) : (
-                      <p className="text-[13px] text-slate-800 font-medium">{m.content}</p>
+                      <p className="text-[13px] font-medium text-slate-800 break-words [overflow-wrap:anywhere]">{m.content}</p>
                     )}
                     <p className="text-[9px] text-slate-400 text-right mt-1 font-black">{m.time}</p>
                   </div>
