@@ -1,15 +1,46 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ShieldCheck, Play } from 'lucide-react';
+import { Send, ShieldCheck } from 'lucide-react';
 import { Message, NegotiationRules } from '../types';
+import { DEMO_CDL_NAME, DEMO_MERCHANT_NAME } from '../demoConfig';
 
 const WEBHOOK_URL = 'https://myn8n.seommerce.shop/webhook/agente-cld-demo';
 
+const createSeedConversation = (): Message[] => {
+  const baseTime = Date.now();
+
+  return [
+    {
+      id: 'seed-1',
+      role: 'assistant',
+      content: `Olá, Renata. Aqui é a central de negociação da ${DEMO_CDL_NAME} referente ao débito de R$ 842,90 com a ${DEMO_MERCHANT_NAME}. Estou com uma condição especial para regularização hoje.`,
+      timestamp: new Date(baseTime - 8 * 60 * 1000),
+    },
+    {
+      id: 'seed-2',
+      role: 'user',
+      content: 'Quero entender as opções.',
+      timestamp: new Date(baseTime - 7 * 60 * 1000),
+    },
+    {
+      id: 'seed-3',
+      role: 'assistant',
+      content: 'Consigo liberar R$ 715,00 no PIX à vista ou entrada de R$ 210,73 + 3x de R$ 210,72 no cartão.',
+      timestamp: new Date(baseTime - 6 * 60 * 1000),
+    },
+    {
+      id: 'seed-4',
+      role: 'assistant',
+      content: 'Se preferir, eu gero o PIX agora ou ajusto o parcelamento dentro das regras da loja.',
+      timestamp: new Date(baseTime - 5 * 60 * 1000),
+    },
+  ];
+};
+
 const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => createSeedConversation());
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
   const sessionIdRef = useRef<string | null>(null);
@@ -77,7 +108,6 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
   const startSimulation = async () => {
     if (isLoading) return;
     setIsLoading(true);
-    setMessages([]);
     sessionIdRef.current = null;
     const currentRequest = ++requestIdRef.current;
     try {
@@ -89,7 +119,6 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
       });
       if (currentRequest !== requestIdRef.current) return;
       if (reply.sessionId) sessionIdRef.current = reply.sessionId;
-      setHasStarted(true);
       setMessages([{
         id: Date.now().toString(),
         role: 'assistant',
@@ -112,7 +141,7 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
 
   const handleSend = async (customInput?: string, actionOverride?: string, optionId?: string) => {
     const text = customInput || input;
-    if (!text.trim() || isLoading || !hasStarted) return;
+    if (!text.trim() || isLoading) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -238,21 +267,6 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
           <span className="bg-white/60 text-[10px] px-3 py-1 rounded-lg text-slate-500 font-bold uppercase tracking-widest">Criptografia CDL Ativa</span>
         </div>
 
-        {!hasStarted && (
-          <div className="bg-white/90 border border-slate-200 rounded-2xl p-4 text-center shadow-sm">
-            <p className="text-sm font-bold text-slate-800">Inicie a simulação para receber a primeira mensagem.</p>
-            <p className="text-xs text-slate-500 mt-1">O webhook vai gerar a abertura da cobrança.</p>
-            <button
-              onClick={startSimulation}
-              disabled={isLoading}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest shadow-lg disabled:bg-slate-300"
-            >
-              <Play size={14} />
-              Iniciar simulação
-            </button>
-          </div>
-        )}
-
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
             <div className={`max-w-[88%] p-3 rounded-2xl shadow-sm relative ${
@@ -292,12 +306,11 @@ const ChatAgent: React.FC<{ rules: NegotiationRules }> = ({ rules }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Responda o agente..."
-            disabled={!hasStarted}
-            className="flex-1 bg-transparent py-1.5 text-[14px] focus:outline-none text-slate-700 disabled:text-slate-400"
+            className="flex-1 bg-transparent py-1.5 text-[14px] focus:outline-none text-slate-700"
           />
           <button
             onClick={() => handleSend()}
-            disabled={isLoading || !input.trim() || !hasStarted}
+            disabled={isLoading || !input.trim()}
             className="p-2 bg-[#075E54] text-white rounded-full hover:bg-emerald-800 disabled:bg-slate-300 transition-all shadow active:scale-90"
           >
             <Send size={16} fill="currentColor" />

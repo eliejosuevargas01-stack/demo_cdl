@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Upload, Play, Pause, Search, MessageCircle, Check, Clock, AlertCircle, X, Settings, Shield, Smartphone } from 'lucide-react';
 import { NegotiationRules, Debtor } from '../types';
+import { DEMO_CDL_NAME } from '../demoConfig';
 
 const DEBTORS_DATA: Debtor[] = [
   { id: '1', name: 'Carlos Eduardo Santos', amount: 1250.00, days: 45, status: 'negotiating', phone: '(11) 98765-4321', historyType: 'unemployed' },
@@ -30,7 +31,7 @@ const getMockHistory = (debtor: Debtor, rules: NegotiationRules) => {
       ];
     case 'aggressive':
       return [
-        { role: 'assistant', content: `Olá ${debtor.name}, tudo bem? 👋\n\nSou o Agente ROI. Identificamos um atraso de ${debtor.days} dias. Gostaria de evitar que seu CPF seja negativado com uma oferta especial? [BOTÃO: Ver Oferta] [BOTÃO: Ignorar]`, time: '14:20' },
+        { role: 'assistant', content: `Olá ${debtor.name}, tudo bem? 👋\n\nSou o agente digital da ${DEMO_CDL_NAME}. Identificamos um atraso de ${debtor.days} dias. Gostaria de evitar que seu CPF seja negativado com uma oferta especial? [BOTÃO: Ver Oferta] [BOTÃO: Ignorar]`, time: '14:20' },
         { role: 'user', content: 'Não vou pagar juros abusivos. Se quiser tirar os juros eu pago.', time: '14:35' },
         { role: 'assistant', content: `Entendo sua frustração. Por isso, apliquei o desconto máximo de ${rules.maxDiscount}% removendo todos os juros e multas. \n\nO valor total cai para R$ ${finalVal}. Podemos fechar? [BOTÃO: Sim, Gerar Guia] [BOTÃO: Não tenho interesse]`, time: '14:36' },
       ];

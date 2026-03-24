@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, DollarSign, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import InfoTip from './InfoTip';
+import { DEMO_CDL_NAME, DEMO_MERCHANT_INDEX, DEMO_MERCHANT_NAME, DEMO_MERCHANT_TOTAL } from '../demoConfig';
 
 const data = [
   { name: 'Sem 01', recovered: 4500, lost: 1200 },
@@ -35,8 +36,11 @@ const MerchantDashboard: React.FC = () => {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-700">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl lg:text-2xl font-bold text-slate-900">Performance de Recuperação 🚀</h1>
-          <p className="text-sm lg:text-base text-slate-500">IA no WhatsApp que cobra inadimplentes e maximiza a recuperação de crédito para CDL e lojistas, 100% automatizada.</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-slate-900">Performance de Recuperação</h1>
+          <p className="text-sm lg:text-base text-slate-500">Visão individual da operação automatizada da {DEMO_CDL_NAME} para um lojista específico.</p>
+          <p className="mt-3 text-xs font-black uppercase tracking-[0.2em] text-blue-700">
+            Visualizando: {DEMO_MERCHANT_NAME} de {DEMO_MERCHANT_TOTAL}
+          </p>
         </div>
         <div className="bg-emerald-50 border border-emerald-100 px-3 lg:px-4 py-2 rounded-xl flex items-center gap-2 self-start">
           <span className="text-emerald-600 font-bold text-xs lg:text-sm">ROI ATUAL: 14.2x</span>
@@ -199,8 +203,8 @@ const MerchantDashboard: React.FC = () => {
             <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-4 sm:p-6">
               <div className="min-w-0">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Relatório Detalhado</p>
-                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho da Loja</h3>
-                <p className="text-sm text-slate-500">{reportData.period}</p>
+                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho da {DEMO_MERCHANT_NAME}</h3>
+                <p className="text-sm text-slate-500">{DEMO_CDL_NAME} • Loja {String(DEMO_MERCHANT_INDEX).padStart(2, '0')} • {reportData.period}</p>
               </div>
               <button
                 onClick={() => setIsReportOpen(false)}
@@ -283,7 +287,7 @@ const MerchantDashboard: React.FC = () => {
                   Fechar
                 </button>
                 <button className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-400 sm:w-auto">
-                  Baixar PDF (DEMO)
+                  Baixar PDF
                 </button>
               </div>
             </div>

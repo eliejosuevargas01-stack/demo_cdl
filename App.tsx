@@ -7,6 +7,7 @@ import ChatAgent from './components/ChatAgent';
 import CollectionsManager from './components/CollectionsManager';
 import { Search, Bell, User, Menu, X } from 'lucide-react';
 import { NegotiationRules } from './types';
+import { DEMO_CDL_NAME } from './demoConfig';
 
 const MOBILE_BREAKPOINT = '(max-width: 767px)';
 
@@ -124,8 +125,8 @@ const App: React.FC = () => {
             <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden sm:block"></div>
             <div className="flex items-center gap-2 lg:gap-3 pl-2 group cursor-pointer">
               <div className="text-right hidden lg:block">
-                <p className="text-sm font-semibold text-slate-800 leading-none">Minha Loja CDL</p>
-                <p className="text-[11px] text-slate-500 font-medium">Administrador</p>
+                <p className="text-sm font-semibold text-slate-800 leading-none">{DEMO_CDL_NAME}</p>
+                <p className="text-[11px] text-slate-500 font-medium">Administrador da operação</p>
               </div>
               <div className="w-8 h-8 lg:w-9 lg:h-9 bg-slate-900 rounded-full flex items-center justify-center text-emerald-400 shadow-lg ring-2 ring-white ring-offset-2">
                 <User size={16} className="lg:w-[18px] lg:h-[18px]" />
@@ -145,7 +146,7 @@ const App: React.FC = () => {
               <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
                 <div>
                   <h2 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">Simulador de Agente</h2>
-                  <p className="text-sm text-slate-500">O Agente ROI operando com {rules.maxDiscount}% de desc. e {rules.maxInstallments}x</p>
+                  <p className="text-sm text-slate-500">Instalação {DEMO_CDL_NAME} operando com {rules.maxDiscount}% de desc. e {rules.maxInstallments}x</p>
                 </div>
                 <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider self-start">Modo Teste</div>
               </div>

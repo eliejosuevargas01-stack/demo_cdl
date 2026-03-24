@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { LayoutDashboard, Users, MessageSquare, Calculator, Building2, LogOut, X } from 'lucide-react';
+import { DEMO_INSTALLATION_NAME } from '../demoConfig';
 
 interface SidebarProps {
   activeView: 'cdl' | 'merchant' | 'collections' | 'simulator';
@@ -20,11 +21,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, onClose, sh
   return (
     <div className="flex h-[100dvh] min-h-[100dvh] w-full flex-col overflow-y-auto border-r border-slate-800/80 bg-slate-900 text-slate-300 shadow-2xl md:h-full md:min-h-0 md:shadow-none">
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/95 p-6 backdrop-blur-sm md:p-8">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-900 font-black shadow-lg shadow-emerald-500/20">
             $
           </div>
-          <span className="font-black text-xl text-white tracking-tighter uppercase">Agente ROI</span>
+          <span className="block text-sm font-black leading-tight tracking-tight text-white uppercase">
+            {DEMO_INSTALLATION_NAME}
+          </span>
         </div>
         {showCloseButton && onClose && (
           <button

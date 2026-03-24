@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { Building2, DollarSign, ShieldCheck, Users, ArrowUpRight } from 'lucide-react';
 import InfoTip from './InfoTip';
+import { DEMO_CDL_NAME } from '../demoConfig';
 
 const recoveryData = [
   { name: 'Sem 01', recovered: 220000, lost: 140000 },
@@ -196,7 +197,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-4 sm:p-6">
               <div className="min-w-0">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Relatório Detalhado</p>
-                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho CDL Consolidado</h3>
+                <h3 className="text-xl font-black text-slate-900 sm:text-2xl">Desempenho Consolidado • {DEMO_CDL_NAME}</h3>
                 <p className="text-sm text-slate-500">{reportData.period}</p>
               </div>
               <button
@@ -311,7 +312,7 @@ const Dashboard: React.FC = () => {
                   Fechar
                 </button>
                 <button className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-emerald-400 sm:w-auto">
-                  Baixar PDF (DEMO)
+                  Baixar PDF
                 </button>
               </div>
             </div>
